@@ -21,8 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-//import com.google.firebase.firestore.ktx.firestore
-//import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +35,7 @@ fun LoginScreen() {
     val passwordVisibility = remember { mutableStateOf(false) }
     val onLogin = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    //val dbFirebase = Firebase.firestore
+    val dbFirebase = Firebase.firestore
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -126,5 +126,23 @@ fun LoginScreen() {
             }
 
         }
+        if (onLogin.value) {
+            dbFirebase.collection("usuarios").
+            document(userName.value).
+            get().
+            addOnSuccessListener { usuario ->
+                if (usuario != null) {
+                    val pwd = usuario.get("password")
+
+                    if (pwd!!.equals(password.value)) {
+                        Toast.makeText(context, "OK", Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        Toast.makeText(context, "usuario no existe", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }//addOnSuccessListener
+            onLogin.value = false
+        }//OnLogin
     }
 }
