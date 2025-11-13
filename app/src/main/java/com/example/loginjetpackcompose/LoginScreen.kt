@@ -28,8 +28,7 @@ import com.google.firebase.Firebase
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LoginScreen() {
-
+fun LoginScreen(navigateToHome: (String) -> Unit) {
     val userName = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val passwordVisibility = remember { mutableStateOf(false) }
@@ -43,8 +42,6 @@ fun LoginScreen() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
             Text(
                 text = "Bienvenido",
                 fontSize = 30.sp,
@@ -52,9 +49,7 @@ fun LoginScreen() {
                 fontWeight = FontWeight.Bold
 
             )
-
             Spacer(modifier = Modifier.height(30.dp))
-
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(0.8f),
                 placeholder = { Text(text = "Nombre de Usuario") },
@@ -66,10 +61,7 @@ fun LoginScreen() {
                     }
                 }
             )
-
             Spacer(modifier = Modifier.height(10.dp))
-
-
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(0.8f),
                 placeholder = { Text(text = "Contraseña") },
@@ -90,22 +82,18 @@ fun LoginScreen() {
                             contentDescription = " "
                         )
                     }
-
                 },
                 visualTransformation = if (passwordVisibility.value) {
                     VisualTransformation.None
                 } else {
                     PasswordVisualTransformation()
                 },
-
-
                 onValueChange = {
                     if (it.length <= 15) {
                         password.value = it
                     }
                 }
             )
-
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp, vertical = 3.dp)
                     .height(70.dp),
@@ -118,13 +106,10 @@ fun LoginScreen() {
                     } else {
                         onLogin.value = true
                     }
-
                 }
-
             ) {
                 Text(text = "Iniciar Sesión")
             }
-
         }
         if (onLogin.value) {
             dbFirebase.collection("usuarios").
@@ -136,13 +121,14 @@ fun LoginScreen() {
 
                     if (pwd!!.equals(password.value)) {
                         Toast.makeText(context, "OK", Toast.LENGTH_SHORT).show()
+                        navigateToHome(userName.value)
                     }
                     else{
                         Toast.makeText(context, "usuario no existe", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }//addOnSuccessListener
+            }
             onLogin.value = false
-        }//OnLogin
+        }
     }
 }
